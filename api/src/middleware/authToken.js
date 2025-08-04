@@ -2,7 +2,8 @@ const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
 module.exports = (req, res, next) => {
-  const token = req.headers["x-access-token"] || req.headers["authorization"];
+  // Bearer token me se token extract karna
+  let token = req.headers["x-access-token"] || req.headers["authorization"];
 
   if (!token) {
     return res.status(401).json({
@@ -11,9 +12,16 @@ module.exports = (req, res, next) => {
     });
   }
 
+  // If token is in Bearer format: "Bearer eyJhbGciOiJIUzI1NiIs..."
+  if (token.startsWith("Bearer ")) {
+    token = token.slice(7, token.length); // Remove 'Bearer ' part
+  }
+
   try {
     const decoded = jwt.verify(token, process.env.TOKEN_SECRET);
-    req.userId = decoded._id;
+
+    // Best practice: attach full decoded user object instead of just _id
+    req.user = decoded; // e.g. { _id: '123', email: 'abc@x.com', ... }
     next();
   } catch (error) {
     console.error("JWT verification failed:", error);

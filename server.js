@@ -45,8 +45,17 @@ app.use(bodyparser.json());
 
 app.use(
   cors({
-    origin: "['http://localhost:3000', 'http://localhost:5173']", // Frontend URL
-    credentials: true, // allow cookies/session
+    origin: function (origin, callback) {
+      const allowedOrigins = ["http://localhost:3000", "http://localhost:5173"];
+      // allow requests with no origin (like mobile apps, curl, etc.)
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      } else {
+        return callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true,
   })
 );
 
