@@ -48,14 +48,14 @@ productController.addProduct = async (req, res) => {
 
     return res.send({
       status: "OK",
-      msg: "Product added successfully",
+      message: "Product added successfully",
       data: responseData,
     });
   } catch (error) {
     console.error(error);
     return res.send({
       status: "Error",
-      msg: "Something went wrong",
+      message: "Something went wrong",
       data: null,
     });
   }
@@ -103,7 +103,7 @@ productController.getproduct = async (req, res) => {
 
     return res.send({
       status: "OK",
-      msg: "Product details retrieved successfully",
+      message: "Product details retrieved successfully",
       length: formattedProducts.length,
       data: formattedProducts,
       pagination: {
@@ -116,7 +116,7 @@ productController.getproduct = async (req, res) => {
     console.error(error);
     return res.send({
       status: "Error",
-      msg: "Something went wrong",
+      message: "Something went wrong",
       data: null,
     });
   }
@@ -134,7 +134,7 @@ productController.getSingleProductById = async (req, res) => {
     if (!getSingleProductData) {
       return res.send({
         status: "Error",
-        msg: "Product not found",
+        message: "Product not found",
         data: null,
       });
     }
@@ -146,14 +146,14 @@ productController.getSingleProductById = async (req, res) => {
 
     return res.send({
       status: "OK",
-      msg: "Product retrieved successfully",
+      message: "Product retrieved successfully",
       data: formattedProductData,
     });
   } catch (error) {
     console.error(error);
     return res.send({
       status: "Error",
-      msg: "Something went wrong",
+      message: "Something went wrong",
       data: null,
     });
   }
@@ -202,21 +202,21 @@ productController.updateProductDetails = async (req, res) => {
     if (!updatedProduct) {
       return res.send({
         status: "Error",
-        msg: "Product not found",
+        message: "Product not found",
         data: null,
       });
     }
 
     return res.send({
       status: "OK",
-      msg: "Product updated successfully",
+      message: "Product updated successfully",
       data: updatedProduct,
     });
   } catch (error) {
     console.error(error);
     return res.send({
       status: "Error",
-      msg: "Something went wrong",
+      message: "Something went wrong",
       data: null,
     });
   }
@@ -232,20 +232,20 @@ productController.deleteProduct = async (req, res) => {
     if (!deletedProduct) {
       return res.send({
         status: "Error",
-        msg: "Product not found",
+        message: "Product not found",
       });
     }
 
     return res.send({
       status: "OK",
-      msg: "Product deleted successfully",
+      message: "Product deleted successfully",
       data: deletedProduct,
     });
   } catch (error) {
     console.error(error);
     return res.send({
       status: "Error",
-      msg: "Something went wrong",
+      message: "Something went wrong",
     });
   }
 };

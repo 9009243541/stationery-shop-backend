@@ -97,46 +97,6 @@ userController.getUserProfile = async (req, res) => {
     });
   }
 };
-// userController.update = async (req, res) => {
-//   try {
-//     const { userId } = req.params;
-//     const { firstName, lastName, age, email, mobile, address, password } =
-//       req.body;
-//     const isAlredayExist = await userService.isExist(email, {
-//       _id: { $ne: userId },
-//     });
-//     if (isAlredayExist && isAlredayExist.email !== email) {
-//       return res.status(400).send({ message: "Mobile number already exist" });
-//     }
-
-//     const user = await userService.update(
-//       { _id: userId },
-//       {
-//         firstName,
-//         lastName,
-//         age,
-//         email,
-//         mobile,
-//         address,
-//         password,
-//       }
-//     );
-//     if (!user) {
-//       return res.status(404).send({ message: "User not found" });
-//     }
-//     return res.status(200).send({
-//       status: true,
-//       message: "User updated successfully",
-//       data: user,
-//     });
-//   } catch (error) {
-//     console.log(error);
-//     return res.status(500).send({
-//       status: false,
-//       message: "Internal Server Error",
-//     });
-//   }
-// };
 
 userController.update = async (req, res) => {
   try {

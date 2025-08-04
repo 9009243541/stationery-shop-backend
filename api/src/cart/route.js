@@ -12,9 +12,9 @@ router.post("/remove", middleware, cartController.removeFromCart);
 router.post("/update-quantity", middleware, cartController.updateQuantity);
 
 // Get cart for a user
-router.get("/get/:userId", cartController.getCart);
+router.get("/get", middleware, cartController.getCart);
 
 // Delete entire cart for a user
-router.delete("/delete/:userId", cartController.deleteCart);
+router.delete("/delete", middleware, cartController.deleteCart);
 
 module.exports = router;

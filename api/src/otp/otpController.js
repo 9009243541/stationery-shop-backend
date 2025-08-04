@@ -77,9 +77,10 @@ const client = wrapper(
 
 // SEND OTP to phone number
 exports.sendMobileOtp = async (req, res) => {
-  const { phone } = req.body;
+  const { phone_no } = req.body;
+  console.log("Sending OTP request with:", { phone_no, phone_country: "+91" });
 
-  if (!phone || phone.length !== 10) {
+  if (!phone_no || phone.length !== 10) {
     return res
       .status(400)
       .json({ success: false, message: "Invalid phone number" });
@@ -89,7 +90,7 @@ exports.sendMobileOtp = async (req, res) => {
     const response = await client.post(
       "https://auth.phone.email/submit-login",
       {
-        phone: phone,
+        phone_no: phone,
         phone_country: "+91",
         client_id: process.env.PHONE_EMAIL_CLIENT_ID,
       }
@@ -141,57 +142,3 @@ exports.verifyMobileOtp = async (req, res) => {
       .json({ success: false, message: "Invalid or expired OTP" });
   }
 };
-// otpController.js
-// const otpGenerator = require("otp-generator");
-
-// exports.sendMobileOtp = async (req, res) => {
-//   const { phone_no, phone_country, client_id } = req.body;
-
-//   if (!phone_no || phone_no.length !== 10) {
-//     return res.status(400).json({ success: false, message: "Invalid phone number" });
-//   }
-
-//   const otp = otpGenerator.generate(6, { upperCase: false, specialChars: false });
-
-//   // Save OTP with expiry (5 min)
-//   otpStore[phone_no] = {
-//     otp,
-//     expiresAt: Date.now() + 5 * 60 * 1000,
-//   };
-
-//   console.log(`OTP for ${phone_country}${phone_no} is: ${otp}`);
-
-//   // TODO: Integrate SMS API here (e.g., Twilio, Fast2SMS, MSG91)
-
-//   return res.json({
-//     success: true,
-//     message: "OTP sent successfully (mock)",
-//   });
-// };
-
-// exports.verifyMobileOtp = (req, res) => {
-//   const { phone_no, otp } = req.body;
-
-//   if (!otp || !phone_no) {
-//     return res.status(400).json({ success: false, message: "Phone and OTP required" });
-//   }
-
-//   const record = otpStore[phone_no];
-
-//   if (!record) {
-//     return res.status(400).json({ success: false, message: "OTP not requested" });
-//   }
-
-//   if (Date.now() > record.expiresAt) {
-//     delete otpStore[phone_no];
-//     return res.status(400).json({ success: false, message: "OTP expired" });
-//   }
-
-//   if (record.otp !== otp) {
-//     return res.status(400).json({ success: false, message: "Incorrect OTP" });
-//   }
-
-//   delete otpStore[phone_no]; // OTP verified, remove from store
-
-//   return res.json({ success: true, message: "OTP verified successfully" });
-// };

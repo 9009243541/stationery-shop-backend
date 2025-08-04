@@ -8,7 +8,7 @@ categoryController.createCategory = async (req, res) => {
     if (check && !check.isDeleted) {
       return res.send({
         status: "Error",
-        msg: "Category already exists",
+        message: "Category already exists",
         data: null,
       });
     } else {
@@ -17,14 +17,14 @@ categoryController.createCategory = async (req, res) => {
       });
       return res.send({
         status: "OK",
-        msg: "Category created successfully ",
+        message: "Category created successfully ",
         data: categorydata,
       });
     }
   } catch (error) {
     return res.send({
       status: "Error",
-      msg: "Something went wrong",
+      message: "Something went wrong",
       data: null,
     });
   }
@@ -44,14 +44,14 @@ categoryController.getAllCategory = async (req, res) => {
     if (!categories.length) {
       return res.send({
         status: "Error",
-        msg: "No data found",
+        message: "No data found",
         data: null,
       });
     } else {
       return res.send({
         length: categories.length,
         status: "OK",
-        msg: "Categories retrieved sucessfully",
+        message: "Categories retrieved sucessfully",
         data: categories,
         page,
         nextPage,
@@ -63,7 +63,7 @@ categoryController.getAllCategory = async (req, res) => {
     console.log(error);
     return res.send({
       status: "Error",
-      msg: "Something went wrong",
+      message: "Something went wrong",
       data: null,
     });
   }
@@ -75,64 +75,24 @@ categoryController.getSingleCategory = async (req, res) => {
     if (!getSingleData) {
       return res.send({
         status: "Error",
-        msg: "No data found",
+        message: "No data found",
         data: null,
       });
     } else {
       return res.send({
         status: "OK",
-        msg: "Category retrived sucessfully",
+        message: "Category retrived sucessfully",
         data: getSingleData,
       });
     }
   } catch (error) {
     return res.send({
       status: "Error",
-      msg: "Something went wrong",
+      message: "Something went wrong",
       data: null,
     });
   }
 };
-// categoryController.updatecategory = async (req, res) => {
-//   try {
-//     const { id } = req.params;
-//     const { categoryname } = req.body;
-
-//     const check = await categoryService.getExistCategory(categoryname);
-//     if (check && !check.isDeleted) {
-//       return res.send({
-//         status: "Error",
-//         msg: "Category already exists",
-//         data: null,
-//       });
-//     } else {
-//       const updateData = await categoryService.getSingleCategory(
-//         { _id: id },
-//         { categoryname },
-//         { new: true }
-//       );
-//       if (!updateData) {
-//         return res.send({
-//           status: "Erorr",
-//           msg: "Category not found",
-//           data: null,
-//         });
-//       } else {
-//         return res.send({
-//           status: "Ok",
-//           msg: "Category data updated successfully",
-//           data: updateData,
-//         });
-//       }
-//     }
-//   } catch (error) {
-//     return res.send({
-//       status: "Error",
-//       msg: "Something went wrong",
-//       data: null,
-//     });
-//   }
-// };
 categoryController.updatecategory = async (req, res) => {
   try {
     const { id } = req.params;
@@ -146,7 +106,7 @@ categoryController.updatecategory = async (req, res) => {
     if (check && !check.isDeleted) {
       return res.send({
         status: "Error",
-        msg: "Category already exists",
+        message: "Category already exists",
         data: null,
       });
     } else {
@@ -160,13 +120,13 @@ categoryController.updatecategory = async (req, res) => {
       if (!updateData) {
         return res.send({
           status: "Error",
-          msg: "Category not found",
+          message: "Category not found",
           data: null,
         });
       } else {
         return res.send({
           status: "Ok",
-          msg: "Category data updated successfully",
+          message: "Category data updated successfully",
           data: updateData,
         });
       }
@@ -175,7 +135,7 @@ categoryController.updatecategory = async (req, res) => {
     console.log(error); // Log the error for debugging
     return res.send({
       status: "Error",
-      msg: "Something went wrong",
+      message: "Something went wrong",
       data: null,
     });
   }
@@ -190,20 +150,20 @@ categoryController.deleteCategory = async (req, res) => {
     if (!categoryDataDelete) {
       return res.send({
         status: "Erorr",
-        msg: "Category not found",
+        message: "Category not found",
         data: null,
       });
     }
     return res.send({
       status: "Ok",
-      msg: "Category delete successfully",
+      message: "Category delete successfully",
       // data: categoryDataDelete,
     });
   } catch (error) {
     console.log(error);
     return res.send({
       status: "Error",
-      msg: "Something went wrong",
+      message: "Something went wrong",
       data: null,
     });
   }
