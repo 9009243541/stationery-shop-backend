@@ -74,7 +74,7 @@ const sendEmail = async ({ to, subject, html }) => {
 
     // Email options
     const mailOptions = {
-      from: `"Your Store" <${process.env.EMAIL_USER}>`,
+      from: `"AV Foundation" <${process.env.EMAIL_USER}>`,
       to,
       subject,
       html,

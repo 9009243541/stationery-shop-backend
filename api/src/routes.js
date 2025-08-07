@@ -7,6 +7,7 @@ const categoryRoute = require("./category/route");
 const whislistRoute = require("./wishlist/route");
 const cartRoute = require("./cart/route");
 const orderRoute = require("./order/route");
+const copyRoute = require("./freeCopyDistrubution/route");
 // const otpController = require("./otp/otpController");
 // ================== GOOGLE AUTH ROUTES ==================
 
@@ -53,5 +54,6 @@ router.use("/categories", categoryRoute);
 router.use("/wishlist", whislistRoute);
 router.use("/cart", cartRoute);
 router.use("/order", orderRoute);
+router.use("/free-copy-distribution", copyRoute);
 
 module.exports = router;
