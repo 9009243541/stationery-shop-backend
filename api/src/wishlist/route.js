@@ -1,17 +1,17 @@
 const router = require("express").Router();
 const wishlistController = require("./controller");
-const middleware = require("../middleware/authToken");
+const authenticate = require("../middleware/authToken");
 
 // Add product to wishlist
-router.post("/add", middleware, wishlistController.addToWishlist);
+router.post("/add", authenticate(), wishlistController.addToWishlist);
 
 // Remove product from wishlist
-router.post("/remove", middleware, wishlistController.removeFromWishlist);
+router.post("/remove", authenticate(), wishlistController.removeFromWishlist);
 
 // Get wishlist for a user
-router.get("/get", middleware, wishlistController.getWishlist);
+router.get("/get", authenticate(), wishlistController.getWishlist);
 
 // Delete entire wishlist for a user
-router.delete("/delete", middleware, wishlistController.deleteWishlist);
+router.delete("/delete", authenticate(), wishlistController.deleteWishlist);
 
 module.exports = router;

@@ -52,6 +52,15 @@ copyController.register = async (req, res) => {
 copyController.getAll = async (req, res) => {
   try {
     const registrations = await copyService.getAll();
+
+    if (!registrations || registrations.length === 0) {
+      return res.status(200).send({
+        status: true,
+        message: "No registrations found",
+        data: [],
+      });
+    }
+
     return res.status(200).send({
       status: true,
       message: "Registrations fetched successfully",
@@ -65,5 +74,6 @@ copyController.getAll = async (req, res) => {
     });
   }
 };
+
 
 module.exports = copyController;

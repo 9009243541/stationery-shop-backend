@@ -11,7 +11,7 @@ const registrationEmail = (name) => {
             Thank you for registering with <strong>Your Store</strong>!
           </p>
           <p style="font-size: 16px; color: #555;">
-            We're thrilled to welcome you to our family. As a member of the <strong>Your Store Foundation</strong>,
+            We're thrilled to welcome you to our family. As a member of the <strong>Acharya Vidhyasagar Foundation</strong>,
             you now have access to exclusive deals, early product launches, and more.
           </p>
           <p style="font-size: 16px; color: #555;">
@@ -24,11 +24,11 @@ const registrationEmail = (name) => {
           <br/>
           <p style="font-size: 16px; color: #555;">
             Best wishes,<br/>
-            <strong>Team Your Store</strong>
+            <strong>AV Foundatione</strong>
           </p>
         </div>
         <div style="background-color: #f1f1f1; text-align: center; padding: 15px; font-size: 13px; color: #999;">
-          © ${new Date().getFullYear()} Your Store Foundation. All rights reserved.
+          © ${new Date().getFullYear()} AV Foundation. All rights reserved.
         </div>
       </div>
     </div>

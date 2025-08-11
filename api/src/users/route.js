@@ -1,5 +1,6 @@
 const router = require("express").Router();
 const userController = require("./controller");
+const authenticate = require("../middleware/authToken");
 const {
   registerUserValidation,
   loginUserValidation,
@@ -14,9 +15,10 @@ router.post(
   userController.registerUser
 );
 router.post("/login", validate(loginUserValidation), userController.loginUser);
-router.get("/profile/:userId", userController.getUserProfile);
+router.get("/profile/:userId", authenticate(), userController.getUserProfile);
 router.put(
   "/update-user/:userId",
+  authenticate(),
   validate(registerUserValidation),
   upload.single("image"),
   userController.update

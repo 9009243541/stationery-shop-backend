@@ -8,6 +8,10 @@ const whislistRoute = require("./wishlist/route");
 const cartRoute = require("./cart/route");
 const orderRoute = require("./order/route");
 const copyRoute = require("./freeCopyDistrubution/route");
+const adminRoute = require("./admin/route");
+const galleryRoute = require("./gallery/route");
+const impactRoute = require("./impact/route");
+
 // const otpController = require("./otp/otpController");
 // ================== GOOGLE AUTH ROUTES ==================
 
@@ -55,5 +59,8 @@ router.use("/wishlist", whislistRoute);
 router.use("/cart", cartRoute);
 router.use("/order", orderRoute);
 router.use("/free-copy-distribution", copyRoute);
+router.use("/admin", adminRoute);
+router.use("/gallery", galleryRoute);
+router.use("/impact-reports", impactRoute);
 
 module.exports = router;

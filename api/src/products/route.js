@@ -1,13 +1,13 @@
 const productController = require("./controller");
 const validate = require("../middleware/validate");
-// const middleWare = require("../../middleWare/authToken");
-const { productSchema } = require("./productValidation");
+const authenticate = require("../middleware/authToken");
+const { productSchema ,updateProductSchema} = require("./productValidation");
 const router = require("express").Router();
 const upload = require("../middleware/upload");
 
 router.post(
   "/add-product",
-  //   middleWare,
+  authenticate(["admin"]),
   validate(productSchema),
   upload.single("image"),
   productController.addProduct
@@ -15,22 +15,21 @@ router.post(
 
 router.put(
   "/update-product/:productId",
-  //   middleWare,
-  validate(productSchema),
+  authenticate(["admin"]),
+  validate(updateProductSchema),
   upload.single("image"),
-
   productController.updateProductDetails
 );
 router.get("/getproducts", productController.getproduct);
 router.get(
   "/get-single-product/:productId",
-  //   middleWare,
+  authenticate(["admin"]),
   productController.getSingleProductById
 );
 
 router.delete(
   "/delete-product/:productId",
-  //   middleWare,
+  authenticate(["admin"]),
   productController.deleteProduct
 );
 module.exports = router;

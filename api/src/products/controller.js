@@ -179,20 +179,33 @@ productController.updateProductDetails = async (req, res) => {
 
     const image = req.file ? req.file.filename : null;
 
-    const updateData = {
-      productTitle,
-      productName,
-      category,
-      brand,
-      mrp,
-      discount,
-      availability,
-      description,
-      rating,
-      review,
-    };
+    // const updateData = {
+    //   productTitle,
+    //   productName,
+    //   category,
+    //   brand,
+    //   mrp,
+    //   discount,
+    //   availability,
+    //   description,
+    //   rating,
+    //   review,
+    // };
 
-    if (image) updateData.image = image;
+    // if (image) updateData.image = image;
+    const updateData = {};
+
+    if (productTitle !== undefined) updateData.productTitle = productTitle;
+    if (productName !== undefined) updateData.productName = productName;
+    if (category !== undefined) updateData.category = category;
+    if (brand !== undefined) updateData.brand = brand;
+    if (mrp !== undefined) updateData.mrp = mrp;
+    if (discount !== undefined) updateData.discount = discount;
+    if (availability !== undefined) updateData.availability = availability;
+    if (description !== undefined) updateData.description = description;
+    if (rating !== undefined) updateData.rating = rating;
+    if (review !== undefined) updateData.review = review;
+    if (image !== null) updateData.image = image; // only if image is uploaded
 
     const updatedProduct = await productService.updateProductDetails(
       productId,
