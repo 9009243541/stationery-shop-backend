@@ -25,6 +25,7 @@ app.use(
         "http://localhost:3000",
         "http://localhost:5173",
         "https://tbtdj99v-5173.inc1.devtunnels.ms",
+        "https://stationery-shop-backend-y2lb.onrender.com",
       ];
       // allow requests with no origin (like mobile apps, curl, etc.)
       if (!origin) return callback(null, true);
@@ -51,6 +52,10 @@ app.use(passport.session());
 
 // ================== Routes ==================
 const route = require("./api/src/routes");
+app.get("/", (req, res) => {
+  res.send("Stationery Shop Backend is running 🚀");
+});
+
 app.use("/", route); // other routes
 
 const PORT = process.env.PORT || 5500;
