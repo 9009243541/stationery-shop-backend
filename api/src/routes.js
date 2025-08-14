@@ -11,7 +11,9 @@ const copyRoute = require("./freeCopyDistrubution/route");
 const adminRoute = require("./admin/route");
 const galleryRoute = require("./gallery/route");
 const impactRoute = require("./impact/route");
-
+const blogRoute = require("./blogs/route");
+const ourRoute = require("./ourReach/route");
+const contactRoute = require("./contact/route");
 // const otpController = require("./otp/otpController");
 // ================== GOOGLE AUTH ROUTES ==================
 
@@ -62,5 +64,7 @@ router.use("/free-copy-distribution", copyRoute);
 router.use("/admin", adminRoute);
 router.use("/gallery", galleryRoute);
 router.use("/impact-reports", impactRoute);
-
+router.use("/blogs", blogRoute);
+router.use("/our-reach", ourRoute);
+router.use("/contact", contactRoute);
 module.exports = router;

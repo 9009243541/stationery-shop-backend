@@ -17,31 +17,46 @@ productService.getProduct = async (
   try {
     const query = { isDeleted: false };
 
-    if (filters.productName)
+    if (filters.productName) {
       query.productName = new RegExp(filters.productName, "i");
+    }
 
-    if (filters.category) query.category = filters.category;
+    if (filters.brand) {
+      query.brand = new RegExp(filters.brand, "i");
+    }
 
-    if (filters.brand) query.brand = new RegExp(filters.brand, "i");
+    if (filters.categoryId) {
+      query.category = filters.categoryId; // direct ObjectId match
+    }
 
-    if (filters.unit) query.unit = filters.unit;
+    if (filters.mrp !== undefined) {
+      query.mrp = filters.mrp;
+    }
 
-    if (filters.hsn) query.hsn = filters.hsn;
+    if (filters.discount !== undefined) {
+      query.discount = filters.discount;
+    }
 
-    if (filters.isFeatured !== undefined)
-      query.isFeatured = filters.isFeatured;
-
-    if (filters.mrp) query.mrp = filters.mrp;
-
-    if (filters.rate) query.rate = filters.rate;
+    if (filters.availability !== undefined) {
+      query.availability = filters.availability;
+    }
 
     const skip = (page - 1) * limit;
 
-    const products = await Product.find(query)
+    let productsQuery = Product.find(query)
       .sort({ [sortBy]: order })
       .skip(skip)
       .limit(limit)
       .populate("category", "categoryname");
+
+    let products = await productsQuery;
+
+    // Category name filter (after populate)
+    if (filters.categoryName) {
+      products = products.filter((p) =>
+        p.category?.categoryname?.toLowerCase().includes(filters.categoryName.toLowerCase())
+      );
+    }
 
     const totalProducts = await Product.countDocuments(query);
 

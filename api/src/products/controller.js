@@ -66,7 +66,8 @@ productController.getproduct = async (req, res) => {
   try {
     const {
       productName,
-      category,
+      categoryId,
+      categoryName,
       brand,
       mrp,
       discount,
@@ -78,13 +79,14 @@ productController.getproduct = async (req, res) => {
     } = req.query;
 
     const filters = {};
+
     if (productName) filters.productName = productName;
-    if (category) filters.category = category;
+    if (categoryId) filters.categoryId = categoryId;
+    if (categoryName) filters.categoryName = categoryName;
     if (brand) filters.brand = brand;
     if (mrp) filters.mrp = parseFloat(mrp);
     if (discount) filters.discount = parseFloat(discount);
-    if (availability !== undefined)
-      filters.availability = availability === "true";
+    if (availability !== undefined) filters.availability = availability === "true";
 
     const { products, total, pages } = await productService.getProduct(
       filters,
@@ -94,23 +96,19 @@ productController.getproduct = async (req, res) => {
       parseInt(order, 10)
     );
 
-    const formattedProducts = products.map((product) => ({
-      ...product.toObject(),
-      category: product?.category?.categoryname,
-      createdAt: convertDateTime(product.createdAt),
-      updatedAt: convertDateTime(product.updatedAt),
-    }));
+    const formattedProducts = products.map((product) => {
+      const obj = product.toObject();
+      obj.createdAt = convertDateTime(product.createdAt);
+      obj.updatedAt = convertDateTime(product.updatedAt);
+      return obj;
+    });
 
     return res.send({
       status: "OK",
       message: "Product details retrieved successfully",
       length: formattedProducts.length,
       data: formattedProducts,
-      pagination: {
-        total,
-        page: parseInt(page, 10),
-        pages,
-      },
+      pagination: { total, page: parseInt(page, 10), pages },
     });
   } catch (error) {
     console.error(error);

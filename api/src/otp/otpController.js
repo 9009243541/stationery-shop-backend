@@ -17,15 +17,17 @@ exports.sendOtp = async (req, res) => {
   otpStore[email] = { otp, expiresAt: Date.now() + 5 * 60 * 1000 }; // expires in 5 mins
 
   try {
-    await sendEmail(
-      email,
-      "A V Foundation - Your OTP Code",
-      `Dear User,
+    await sendEmail({
+      to: email,
+      subject: "A V Foundation - Your OTP Code",
+      html: `
+    <p>Dear User,</p>
+    <p>Welcome to A V Foundation!</p>
+    <p>Your One-Time Password (OTP) is: <b>${otp}</b></p>
+    <p>This OTP will expire in 5 minutes.</p>
+  `,
+    });
 
-Welcome to A V Foundation!
-
-Your One-Time Password (OTP) is: ${otp}`
-    );
     console.log(`OTP ${otp} sent to ${email}`);
     return res.json({ success: true, message: "OTP sent successfully" });
   } catch (error) {

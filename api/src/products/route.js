@@ -7,7 +7,7 @@ const upload = require("../middleware/upload");
 
 router.post(
   "/add-product",
-  authenticate(["admin"]),
+  // authenticate(["admin"]),
   validate(productSchema),
   upload.single("image"),
   productController.addProduct
@@ -15,7 +15,7 @@ router.post(
 
 router.put(
   "/update-product/:productId",
-  authenticate(["admin"]),
+  // authenticate(["admin"]),
   validate(updateProductSchema),
   upload.single("image"),
   productController.updateProductDetails
@@ -23,13 +23,13 @@ router.put(
 router.get("/getproducts", productController.getproduct);
 router.get(
   "/get-single-product/:productId",
-  authenticate(["admin"]),
+  // authenticate(["admin"]),
   productController.getSingleProductById
 );
 
 router.delete(
   "/delete-product/:productId",
-  authenticate(["admin"]),
+  // authenticate(["admin"]),
   productController.deleteProduct
 );
 module.exports = router;
