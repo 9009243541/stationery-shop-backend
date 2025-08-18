@@ -119,6 +119,7 @@ const allowedOrigins = [
   "https://tbtdj99v-5173.inc1.devtunnels.ms",
   "https://av-frontend.onrender.com",
   "https://stationery-shop-backend-y2lb.onrender.com",
+  "https://av-foundation.vercel.app",
 ];
 
 app.use(
