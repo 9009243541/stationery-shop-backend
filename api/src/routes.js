@@ -29,7 +29,7 @@ router.get(
     // After successful login, redirect manually
     const email = req.user.email;
     res.redirect(
-      `http://localhost:5173/register?from=google&email=${encodeURIComponent(
+      `https://av-frontend.onrender.com/register?from=google&email=${encodeURIComponent(
         email
       )}`
     );
@@ -68,3 +68,7 @@ router.use("/blogs", blogRoute);
 router.use("/our-reach", ourRoute);
 router.use("/contact", contactRoute);
 module.exports = router;
+
+
+
+
