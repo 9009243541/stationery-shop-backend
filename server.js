@@ -117,7 +117,8 @@ const allowedOrigins = [
   "http://localhost:3000",
   "http://localhost:5173",
   "https://tbtdj99v-5173.inc1.devtunnels.ms",
-  "https://av-frontend.onrender.com", // frontend deployed URL
+  "https://av-frontend.onrender.com",
+  "https://stationery-shop-backend-y2lb.onrender.com",
 ];
 
 app.use(
