@@ -2,7 +2,7 @@ const categoryController = require("./controller");
 const validate = require("../middleware/validate");
 const categorySchema = require("./categoryValidation");
 const router = require("express").Router();
-const authenticate = require('../middleware/authToken');
+const authenticate = require("../middleware/authToken");
 router.post(
   "/addcategory",
   authenticate(["admin"]),
@@ -11,7 +11,7 @@ router.post(
 );
 router.get(
   "/getAllCategory",
-  authenticate(["admin"]),
+  authenticate(),
   categoryController.getAllCategory
 );
 router.get(
