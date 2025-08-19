@@ -7,7 +7,7 @@ orderService.placeOrder = async (orderData) => {
 };
 
 orderService.getOrdersByUserId = async (userId) => {
-  return await OrderModel.find({ userId }).sort({ createdAt: -1 }); // latest order first
+  return await OrderModel.find({ userId }).populate("products.productId", "productName image price") .sort({ createdAt: -1 }); // latest order first
 };
 orderService.getSingleOrderById=async () => {
   return await OrderModel.findOne()
