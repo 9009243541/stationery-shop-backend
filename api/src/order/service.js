@@ -6,4 +6,10 @@ orderService.placeOrder = async (orderData) => {
   return await OrderModel.create(orderData);
 };
 
+orderService.getOrdersByUserId = async (userId) => {
+  return await OrderModel.find({ userId }).sort({ createdAt: -1 }); // latest order first
+};
+orderService.getSingleOrderById=async () => {
+  return await OrderModel.findOne()
+}
 module.exports = orderService;

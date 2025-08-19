@@ -11,7 +11,7 @@ router.post(
 );
 router.get(
   "/getAllCategory",
-  authenticate(),
+  authenticate(["admin"]),
   categoryController.getAllCategory
 );
 router.get(

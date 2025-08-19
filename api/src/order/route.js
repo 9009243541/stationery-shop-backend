@@ -10,5 +10,10 @@ router.post(
   validate(orderValidation),
   orderController.placeOrder
 );
+router.get(
+  "/my-orders",
+  authenticate(),
+  orderController.getUserOrders
+);
 
 module.exports = router;
