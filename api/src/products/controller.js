@@ -16,6 +16,7 @@ productController.addProduct = async (req, res) => {
       availability,
       description,
       rating,
+      organizedBy,
       review,
     } = req.body;
 
@@ -35,6 +36,7 @@ productController.addProduct = async (req, res) => {
       availability,
       description,
       rating,
+      organizedBy,
       review,
     });
 
@@ -172,6 +174,7 @@ productController.updateProductDetails = async (req, res) => {
       availability,
       description,
       rating,
+      organizedBy,
       review,
     } = req.body;
 
@@ -187,6 +190,7 @@ productController.updateProductDetails = async (req, res) => {
     //   availability,
     //   description,
     //   rating,
+    // organizedBy,
     //   review,
     // };
 
@@ -202,7 +206,8 @@ productController.updateProductDetails = async (req, res) => {
     if (availability !== undefined) updateData.availability = availability;
     if (description !== undefined) updateData.description = description;
     if (rating !== undefined) updateData.rating = rating;
-    if (review !== undefined) updateData.review = review;
+    if (rating !== undefined) updateData.rating = rating;
+    if (organizedBy !== undefined) updateData.organizedBy = organizedBy;
     if (image !== null) updateData.image = image; // only if image is uploaded
 
     const updatedProduct = await productService.updateProductDetails(

@@ -108,11 +108,13 @@ const updateProductSchema = Joi.object({
     "number.max": "Rating cannot be more than 5",
   }),
 
+  organizedBy: Joi.string().allow("").trim().messages({
+    "string.base": "Organization must be a string",
+  }),
+
   review: Joi.array().items(Joi.string().trim()).messages({
     "array.base": "Review must be an array of strings",
   }),
-}).unknown(false); 
+}).unknown(false);
 
-
-
-module.exports = { productSchema,updateProductSchema };
+module.exports = { productSchema, updateProductSchema };

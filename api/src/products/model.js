@@ -53,6 +53,10 @@ const productSchema = new mongoose.Schema(
       max: 5,
       default: 0,
     },
+    organizedBy: {
+      type: String,
+      required: false,
+    },
     review: [
       {
         type: String,

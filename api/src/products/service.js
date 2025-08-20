@@ -54,7 +54,9 @@ productService.getProduct = async (
     // Category name filter (after populate)
     if (filters.categoryName) {
       products = products.filter((p) =>
-        p.category?.categoryname?.toLowerCase().includes(filters.categoryName.toLowerCase())
+        p.category?.categoryname
+          ?.toLowerCase()
+          .includes(filters.categoryName.toLowerCase())
       );
     }
 
