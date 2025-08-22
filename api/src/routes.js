@@ -14,6 +14,7 @@ const impactRoute = require("./impact/route");
 const blogRoute = require("./blogs/route");
 const ourRoute = require("./ourReach/route");
 const contactRoute = require("./contact/route");
+const billRoute = require("./bill/route");
 // const otpController = require("./otp/otpController");
 // ================== GOOGLE AUTH ROUTES ==================
 
@@ -67,6 +68,7 @@ router.use("/impact-reports", impactRoute);
 router.use("/blogs", blogRoute);
 router.use("/our-reach", ourRoute);
 router.use("/contact", contactRoute);
+router.use("/bill", billRoute);
 module.exports = router;
 
 
