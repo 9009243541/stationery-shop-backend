@@ -2,8 +2,8 @@ const GalleryModel = require("./model");
 
 const galleryService = {};
 
-galleryService.create = async ({ image, description }) => {
-  return await GalleryModel.create({ image, description });
+galleryService.create = async ({ image,video, description }) => {
+  return await GalleryModel.create({ image,video, description });
 };
 
 galleryService.getAll = async () => {

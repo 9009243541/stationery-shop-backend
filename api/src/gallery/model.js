@@ -4,7 +4,11 @@ const gallerySchema = mongoose.Schema(
   {
     image: {
       type: String,
-      required: true,
+      default: "",
+    },
+    video: {
+      type: String,
+      default: "",
     },
     description: {
       type: String,
