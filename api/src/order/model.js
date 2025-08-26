@@ -58,19 +58,34 @@ const orderSchema = new mongoose.Schema(
       latitude: { type: String, required: true },
       longitude: { type: String, required: true },
     },
+    // products: [
+    //   {
+    //     productId: {
+    //       type: mongoose.Schema.Types.ObjectId,
+    //       ref: "Product",
+    //       required: true,
+    //     },
+    //     quantity: {
+    //       type: Number,
+    //       required: true,
+    //     },
+    //   },
+    // ],
     products: [
-      {
-        productId: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "Product",
-          required: true,
-        },
-        quantity: {
-          type: Number,
-          required: true,
-        },
-      },
-    ],
+  {
+    productId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Product",
+      required: true,
+    },
+    name: { type: String },        // snapshot
+    price: { type: Number },       // snapshot final price
+    quantity: { type: Number, required: true },
+    total: { type: Number },       // quantity * price
+  },
+],
+totalAmount: { type: Number, required: true },
+
     paymentMode: {
       type: String,
       enum: ["cash", "upi", "card", "netbanking"],
