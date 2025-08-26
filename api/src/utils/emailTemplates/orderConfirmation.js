@@ -23,16 +23,20 @@ module.exports = function orderConfirmationTemplate({
         <p style="margin: 0;"><strong>Shipping To:</strong> ${deliveryAddress}</p>
       </div>
 
-      <h3 style="margin-top: 24px;">🛍️ Items Ordered</h3>
-      <ul style="padding-left: 20px; color: #444;">
-        ${(order.items || [])
-          .map((item) => `<li>${item.name} &times; ${item.quantity}</li>`)
-          .join("")}
-      </ul>
+     <h3 style="margin-top: 24px;">🛍️ Items Ordered</h3>
+<ul style="padding-left: 20px; color: #444;">
+  ${(order.items || [])
+    .map(
+      (item) =>
+        `<li>${item.name} - ₹${item.price} × ${item.quantity} = ₹${item.total}</li>`
+    )
+    .join("")}
+</ul>
 
-      <p style="margin-top: 16px;"><strong>Total Amount:</strong> ₹${
-        order.totalAmount || "N/A"
-      }</p>
+<p style="margin-top: 16px;">
+  <strong>Total Amount:</strong> ₹${order.totalAmount || "0"}
+</p>
+
 
       <p style="margin-top: 16px; font-size: 15px; color: #555;">
         📅 <strong>Estimated Delivery:</strong> Within 3–5 business days
