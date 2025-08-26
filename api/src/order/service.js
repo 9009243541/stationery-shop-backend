@@ -54,7 +54,7 @@ orderService.placeOrder = async (orderData) => {
 // Get all orders of a user
 orderService.getOrdersByUserId = async (userId) => {
   return await OrderModel.find({ userId })
-    .populate("items.productId", "productName image price")
+    .populate("products.productId", "productName image price")
     .sort({ createdAt: -1 }); // latest first
 };
 
