@@ -69,12 +69,53 @@
 
 // module.exports = orderService;
 
-///3rd logic
+//////////////////////3rd logic latest abhi chaloo he
+// const OrderModel = require("./model");
+
+// const orderService = {};
+
+// // Place Order
+// orderService.placeOrder = async (orderData) => {
+//   const { products, ...rest } = orderData;
+
+//   // Calculate total amount from snapshot products
+//   const totalAmount = products.reduce((sum, p) => sum + p.total, 0);
+
+//   // Create order
+//   const order = await OrderModel.create({
+//     ...rest,
+//     products,      // ✅ snapshot with { productId, name, price, quantity, total }
+//     totalAmount,   // ✅ stored separately
+//   });
+
+//   return order;
+// };
+
+// // Get all orders of a user
+// orderService.getOrdersByUserId = async (userId) => {
+//   return await OrderModel.find({ userId })
+//     .populate("products.productId", "productName image finalPrice") // ✅ correct path
+//     .sort({ createdAt: -1 });
+// };
+
+// // Get single order by ID
+// orderService.getSingleOrderById = async (orderId) => {
+//   return await OrderModel.findOne({ _id: orderId }).populate(
+//     "products.productId",
+//     "productName image finalPrice"
+//   );
+// };
+
+// module.exports = orderService;
+
+
+
+
+//////////////////////////////
 const OrderModel = require("./model");
 
 const orderService = {};
 
-// Place Order
 orderService.placeOrder = async (orderData) => {
   const { products, ...rest } = orderData;
 
@@ -84,26 +125,29 @@ orderService.placeOrder = async (orderData) => {
   // Create order
   const order = await OrderModel.create({
     ...rest,
-    products,      // ✅ snapshot with { productId, name, price, quantity, total }
-    totalAmount,   // ✅ stored separately
+    products,
+    totalAmount,
   });
 
   return order;
 };
 
-// Get all orders of a user
 orderService.getOrdersByUserId = async (userId) => {
   return await OrderModel.find({ userId })
-    .populate("products.productId", "productName image finalPrice") // ✅ correct path
+    .populate({
+      path: "products.productId",
+      select: "productName image mrp discount",
+      options: { toJSON: { virtuals: true }, toObject: { virtuals: true } }, // Include virtuals
+    })
     .sort({ createdAt: -1 });
 };
 
-// Get single order by ID
 orderService.getSingleOrderById = async (orderId) => {
-  return await OrderModel.findOne({ _id: orderId }).populate(
-    "products.productId",
-    "productName image finalPrice"
-  );
+  return await OrderModel.findOne({ _id: orderId }).populate({
+    path: "products.productId",
+    select: "productName image mrp discount",
+    options: { toJSON: { virtuals: true }, toObject: { virtuals: true } }, // Include virtuals
+  });
 };
 
 module.exports = orderService;
