@@ -6,7 +6,7 @@ module.exports = function orderConfirmationTemplate({
   return `
   <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden;">
     <div style="background-color: #232f3e; padding: 16px; text-align: center;">
-      <img src="https://tbtdj99v-3300.inc1.devtunnels.ms/uploads/logo/aa.png" alt="AV Foundation Logo" style="height: 50px;" />
+      <img src="https://stationery-shop-backend-y2lb.onrender.com/uploads/aa.png" alt="AV Foundation Logo" style="height: 50px;" />
     </div>
 
     <div style="padding: 24px;">

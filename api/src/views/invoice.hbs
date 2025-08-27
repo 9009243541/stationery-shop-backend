@@ -1,0 +1,196 @@
+{{!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Order Invoice - AV Foundation</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .invoice-container {
+      border: 2px solid #e5e7eb;
+      border-radius: 12px;
+      background: linear-gradient(to bottom, #f9fafb, #ffffff);
+    }
+    .table-header {
+      background: #1f2937;
+      color: #ffffff;
+    }
+    .table-row:hover {
+      background: #f3f4f6;
+      transition: background 0.2s ease-in-out;
+    }
+    .underline-effect {
+      position: relative;
+      display: inline-block;
+    }
+    .underline-effect::after {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 2px;
+      bottom: -4px;
+      left: 0;
+      background: #1f2937;
+    }
+  </style>
+</head>
+<body class="bg-gray-200 font-sans">
+  <div class="max-w-4xl mx-auto p-8 my-10 invoice-container">
+    <!-- Header with Logo and Foundation Name -->
+    <div class="flex justify-between items-center mb-8">
+      <div class="flex items-center">
+        <img src="/public/assets/avfoundation_logo.png" alt="AV Foundation Logo" class="w-24 h-auto mr-4">
+        <h1 class="text-3xl font-extrabold text-gray-900">AV FOUNDATION</h1>
+      </div>
+      <div class="text-right text-gray-600">
+        <p class="text-sm font-medium">123 Business Street, India</p>
+        <p class="text-sm">support@avfoundation.com | +91 98765 43210</p>
+      </div>
+    </div>
+
+    <!-- Invoice Title -->
+    <h2 class="text-4xl font-bold text-center text-gray-900 mb-6">
+      <span class="underline-effect">Order Invoice</span>
+    </h2>
+
+    <!-- Customer and Order Info -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+      <div class="bg-gray-50 p-4 rounded-lg shadow-sm">
+        <p class="text-sm text-gray-600 mb-2"><span class="font-semibold">Invoice No:</span> {{bill.invoiceNo}}</p>
+        <p class="text-sm text-gray-600 mb-2"><span class="font-semibold">Order ID:</span> {{order._id}}</p>
+        <p class="text-sm text-gray-600"><span class="font-semibold">Customer:</span> {{user.firstName}} {{user.lastName}}</p>
+      </div>
+      <div class="bg-gray-50 p-4 rounded-lg shadow-sm">
+        <p class="text-sm text-gray-600 mb-2"><span class="font-semibold">Email:</span> {{user.email}}</p>
+        <p class="text-sm text-gray-600 mb-2"><span class="font-semibold">Address:</span> {{order.deliveryAddress}}</p>
+        <p class="text-sm text-gray-600"><span class="font-semibold">Date:</span> {{formatDate order.createdAt}}</p>
+      </div>
+    </div>
+
+    <!-- Product Table -->
+    <div class="overflow-x-auto mb-8">
+      <table class="w-full border-collapse">
+        <thead>
+          <tr class="table-header text-sm font-semibold">
+            <th class="py-4 px-6 text-left rounded-tl-lg">Product</th>
+            <th class="py-4 px-6 text-center">Quantity</th>
+            <th class="py-4 px-6 text-right">Price</th>
+            <th class="py-4 px-6 text-right rounded-tr-lg">Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each order.products}}
+            <tr class="table-row border-b border-gray-200 text-gray-700 text-sm">
+              <td class="py-4 px-6">{{this.productId.productName}}</td>
+              <td class="py-4 px-6 text-center">{{this.quantity}}</td>
+              <td class="py-4 px-6 text-right">₹{{this.price}}</td>
+              <td class="py-4 px-6 text-right font-medium">₹{{this.total}}</td>
+            </tr>
+          {{/each}}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Summary -->
+    <div class="flex justify-end mb-8">
+      <div class="bg-gray-50 p-4 rounded-lg shadow-sm w-full md:w-1/3">
+        <p class="text-lg font-semibold text-gray-800 mb-2">Total Amount: ₹{{bill.totalAmount}}</p>
+        <p class="text-sm text-gray-600">Payment Mode: {{bill.paymentMode}}</p>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="text-center">
+      <p class="text-sm text-gray-500 italic mb-4">Thank you for shopping with AV Foundation!</p>
+      <p class="text-xs text-gray-400">All rights reserved © 2025 AV Foundation</p>
+    </div>
+  </div>
+</body>
+</html> --}}
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Order Invoice - AV Foundation</title>
+</head>
+<body style="background-color: #e5e7eb; font-family: Arial, sans-serif;">
+  <div style="max-width: 896px; margin: 40px auto; padding: 32px; border: 2px solid #e5e7eb; border-radius: 12px; background: linear-gradient(to bottom, #f9fafb, #ffffff);">
+    <!-- Header with Logo and Foundation Name -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px;">
+      <div style="display: flex; align-items: center;">
+        <img src="https://stationery-shop-backend-y2lb.onrender.com/uploads/aa.png" alt="AV Foundation Logo" style="width: 96px; height: auto; margin-right: 16px;" onerror="this.src='https://via.placeholder.com/100'">
+        <h1 style="font-size: 24px; font-weight: 800; color: #111827;">AV FOUNDATION</h1>
+      </div>
+      <div style="text-align: right; color: #4b5563;">
+        <p style="font-size: 14px; font-weight: 500; margin-bottom: 8px;">123 Business Street, India</p>
+        <p style="font-size: 14px;">support@avfoundation.com | +91 98765 43210</p>
+      </div>
+    </div>
+
+    <!-- Invoice Title -->
+    <h2 style="font-size: 32px; font-weight: 700; text-align: center; color: #111827; margin-bottom: 24px; position: relative;">
+      <span style="position: relative; display: inline-block;">Order Invoice
+        <span style="position: absolute; width: 100%; height: 2px; bottom: -4px; left: 0; background: #1f2937;"></span>
+      </span>
+    </h2>
+
+    <!-- Customer and Order Info -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; margin-bottom: 40px;">
+      <div style="background-color: #f9fafb; padding: 16px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+        <p style="font-size: 14px; color: #4b5563; margin-bottom: 8px;"><span style="font-weight: 600;">Invoice No:</span> {{bill.invoiceNo}}</p>
+        <p style="font-size: 14px; color: #4b5563; margin-bottom: 8px;"><span style="font-weight: 600;">Order ID:</span> {{order._id}}</p>
+        <p style="font-size: 14px; color: #4b5563;"><span style="font-weight: 600;">Customer:</span> {{user.firstName}} {{user.lastName}}</p>
+      </div>
+      <div style="background-color: #f9fafb; padding: 16px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+        <p style="font-size: 14px; color: #4b5563; margin-bottom: 8px;"><span style="font-weight: 600;">Email:</span> {{user.email}}</p>
+        <p style="font-size: 14px; color: #4b5563; margin-bottom: 8px;"><span style="font-weight: 600;">Address:</span> {{order.deliveryAddress}}</p>
+        <p style="font-size: 14px; color: #4b5563;"><span style="font-weight: 600;">Date:</span> {{formatDate order.createdAt}}</p>
+      </div>
+    </div>
+
+    <!-- Product Table -->
+    <div style="overflow-x: auto; margin-bottom: 32px;">
+      <table style="width: 100%; border-collapse: collapse;">
+        <thead>
+          <tr style="background-color: #1f2937; color: #ffffff; font-size: 14px; font-weight: 600;">
+            <th style="padding: 16px; text-align: left; border-top-left-radius: 8px;">Product</th>
+            <th style="padding: 16px; text-align: center;">Quantity</th>
+            <th style="padding: 16px; text-align: right;">Price</th>
+            <th style="padding: 16px; text-align: right; border-top-right-radius: 8px;">Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each order.products}}
+            <tr style="border-bottom: 1px solid #e5e7eb; color: #4b5563; font-size: 14px;">
+              <td style="padding: 16px;">{{this.productId.productName}}</td>
+              <td style="padding: 16px; text-align: center;">{{this.quantity}}</td>
+              <td style="padding: 16px; text-align: right;">₹{{this.price}}</td>
+              <td style="padding: 16px; text-align: right; font-weight: 500;">₹{{this.total}}</td>
+            </tr>
+          {{/each}}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Summary -->
+    <div style="display: flex; justify-content: flex-end; margin-bottom: 32px;">
+      <div style="background-color: #f9fafb; padding: 16px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); width: 100%; max-width: 300px;">
+        <p style="font-size: 18px; font-weight: 600; color: #1f2937; margin-bottom: 8px;">Total Amount: ₹{{bill.totalAmount}}</p>
+        <p style="font-size: 14px; color: #4b5563;">Payment Mode: {{bill.paymentMode}}</p>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div style="text-align: center;">
+      <p style="font-size: 14px; color: #6b7280; font-style: italic; margin-bottom: 16px;">Thank you for shopping with AV Foundation!</p>
+      <p style="font-size: 12px; color: #9ca3af;">All rights reserved © 2025 AV Foundation</p>
+    </div>
+  </div>
+</body>
+</html>

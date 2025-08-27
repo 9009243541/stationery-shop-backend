@@ -20,6 +20,7 @@
     "dotenv-flow": "^4.1.0",
     "express": "^5.1.0",
     "express-session": "^1.18.2",
+    "hbs": "^4.2.0",
     "install": "^0.13.0",
     "joi": "^17.13.3",
     "jsonwebtoken": "^9.0.2",
@@ -30,8 +31,7 @@
     "otp-generator": "^4.0.1",
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
-    "pdf2pic": "^3.2.0",
-    "pdfkit": "^0.17.1",
+    "puppeteer": "^24.17.0",
     "tough-cookie": "^5.1.2",
     "twilio": "^5.7.3"
   }

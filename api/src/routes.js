@@ -70,7 +70,3 @@ router.use("/our-reach", ourRoute);
 router.use("/contact", contactRoute);
 router.use("/bill", billRoute);
 module.exports = router;
-
-
-
-
