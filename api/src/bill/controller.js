@@ -322,22 +322,32 @@ billController.generateBill = async (req, res) => {
     // Launch Puppeteer with explicit executable path for Render
     console.log("Launching Puppeteer...");
     // const puppeteerOptions = {
-    //   headless: "new", // Use new headless mode
-    //   args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage"],
-    //   executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined,
+    //   headless: "new",
+    //   args: [
+    //     "--no-sandbox",
+    //     "--disable-setuid-sandbox",
+    //     "--disable-dev-shm-usage",
+    //     "--font-render-hinting=none",
+    //     "--disable-gpu",
+    //     "--single-process", // Memory optimize for Render
+    //     "--no-zygote", // Memory optimize for Render
+    //   ],
+    //   executablePath:
+    //     process.env.PUPPETEER_EXECUTABLE_PATH ||
+    //     "C:/Users/HP/.cache/puppeteer/chrome/win64-139.0.7258.138/chrome-win64/chrome.exe",
     // };
 
-   const puppeteerOptions = {
-  headless: "new",
-  args: [
-    "--no-sandbox",
-    "--disable-setuid-sandbox",
-    "--disable-dev-shm-usage",
-    "--font-render-hinting=none", // Extra: Font issues avoid karein
-    "--disable-gpu", // Render pe GPU nahi hota
-  ],
-  executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || "C:/Users/HP/.cache/puppeteer/chrome/win64-139.0.7258.138/chrome-win64/chrome.exe",
-};
+       const puppeteerOptions = {
+      headless: "new",
+      args: [
+        "--no-sandbox",
+        "--disable-setuid-sandbox",
+        "--disable-dev-shm-usage",
+        "--font-render-hinting=none", // Extra: Font issues avoid karein
+        "--disable-gpu", // Render pe GPU nahi hota
+      ],
+      executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || "C:/Users/HP/.cache/puppeteer/chrome/win64-139.0.7258.138/chrome-win64/chrome.exe",
+    };
     browser = await puppeteer.launch(puppeteerOptions);
     console.log("Puppeteer launched successfully");
 
