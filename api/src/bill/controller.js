@@ -327,16 +327,17 @@ billController.generateBill = async (req, res) => {
     //   executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined,
     // };
 
-    const puppeteerOptions = {
-      headless: "new",
-      args: [
-        "--no-sandbox",
-        "--disable-setuid-sandbox",
-        "--disable-dev-shm-usage",
-      ],
-      executablePath:
-        "C:/Users/HP/.cache/puppeteer/chrome/win64-139.0.7258.138/chrome-win64/chrome.exe",
-    };
+   const puppeteerOptions = {
+  headless: "new",
+  args: [
+    "--no-sandbox",
+    "--disable-setuid-sandbox",
+    "--disable-dev-shm-usage",
+    "--font-render-hinting=none", // Extra: Font issues avoid karein
+    "--disable-gpu", // Render pe GPU nahi hota
+  ],
+  executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || "C:/Users/HP/.cache/puppeteer/chrome/win64-139.0.7258.138/chrome-win64/chrome.exe",
+};
     browser = await puppeteer.launch(puppeteerOptions);
     console.log("Puppeteer launched successfully");
 
