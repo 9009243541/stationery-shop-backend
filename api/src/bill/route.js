@@ -25,7 +25,7 @@ const billValidation = Joi.object({
 });
 
 router.post(
-  "/generate-bill",
+  "/generate",
   authenticate(),
   validate(billValidation),
   billController.generateBill

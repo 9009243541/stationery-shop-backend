@@ -235,6 +235,7 @@
 // api/src/bill/controller.js
 
 // api/src/bill/controller.js
+// api/src/bill/controller.js
 const billService = require("./service");
 const Order = require("../order/model");
 const UserModel = require("../users/model");
@@ -249,6 +250,7 @@ const generateBillHtml = require("../utils/pdfTemplates/generateBillHtml");
 const billController = {};
 
 billController.generateBill = async (req, res) => {
+  let browser = null;
   try {
     const { orderId, paymentMode } = req.body;
     const { returnBlob, returnImage } = req.query;
@@ -317,21 +319,45 @@ billController.generateBill = async (req, res) => {
     });
     console.log("HTML Content Length:", htmlContent.length);
 
-    // Launch Puppeteer for PDF/Image
-    const browser = await puppeteer.launch({
-      headless: true,
-      args: ["--no-sandbox", "--disable-setuid-sandbox"],
-    });
+    // Launch Puppeteer with explicit executable path for Render
+    console.log("Launching Puppeteer...");
+    // const puppeteerOptions = {
+    //   headless: "new", // Use new headless mode
+    //   args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage"],
+    //   executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined,
+    // };
+
+    const puppeteerOptions = {
+      headless: "new",
+      args: [
+        "--no-sandbox",
+        "--disable-setuid-sandbox",
+        "--disable-dev-shm-usage",
+      ],
+      executablePath:
+        "C:/Users/HP/.cache/puppeteer/chrome/win64-139.0.7258.138/chrome-win64/chrome.exe",
+    };
+    browser = await puppeteer.launch(puppeteerOptions);
+    console.log("Puppeteer launched successfully");
+
     const page = await browser.newPage();
 
-    // Set content with base URL
+    // Debug Puppeteer logs
+    page.on("console", (msg) => console.log("PAGE LOG:", msg.text()));
+    page.on("error", (err) => console.log("PAGE ERROR:", err));
+    page.on("requestfailed", (request) =>
+      console.log("REQUEST FAILED:", request.url(), request.failure())
+    );
+
+    // Set content with relaxed waitUntil
     await page.setContent(htmlContent, {
-      waitUntil: "networkidle2",
-      baseUrl: "https://stationery-shop-backend-y2lb.onrender.com",
+      waitUntil: "domcontentloaded", // Even more relaxed
+      timeout: 60000, // 60s
+      baseUrl: process.env.BASE_URL || "http://localhost:3300",
     });
 
     // Wait for rendering
-    await new Promise((resolve) => setTimeout(resolve, 3000)); // Increased to 3s
+    await new Promise((resolve) => setTimeout(resolve, 5000));
 
     // Debug: Save rendered HTML and screenshot
     const renderedPath = path.join(__dirname, "../../../Uploads/rendered.html");
@@ -352,6 +378,12 @@ billController.generateBill = async (req, res) => {
       margin: { top: "20px", right: "20px", bottom: "20px", left: "20px" },
       preferCSSPageSize: true,
     });
+
+    // Debug: Save PDF
+    await fs.writeFile(
+      path.join(__dirname, "../../../Uploads/debug_pdf.pdf"),
+      pdfBuffer
+    );
 
     // Send email with PDF attachment
     try {
@@ -386,7 +418,9 @@ billController.generateBill = async (req, res) => {
       const outputPath = path.join(outputDir, `bill_${bill.invoiceNo}.png`);
 
       await page.screenshot({ path: outputPath, fullPage: true });
-      const imageUrl = `https://stationery-shop-backend-y2lb.onrender.com/uploads/bills/bill_${bill.invoiceNo}.png`;
+      const imageUrl = `${
+        process.env.BASE_URL || "http://localhost:3300"
+      }/uploads/bills/bill_${bill.invoiceNo}.png`;
       await browser.close();
 
       return res.status(200).json({
@@ -404,6 +438,9 @@ billController.generateBill = async (req, res) => {
         "Content-Type": "application/pdf",
         "Content-Disposition": `inline; filename=Invoice_${bill.invoiceNo}.pdf`,
         "Content-Length": pdfBuffer.length,
+        "Cache-Control": "no-cache, no-store, must-revalidate",
+        Pragma: "no-cache",
+        Expires: "0",
       });
       return res.send(pdfBuffer);
     }
@@ -424,11 +461,14 @@ billController.generateBill = async (req, res) => {
     });
   } catch (error) {
     console.error("❌ Error generating bill:", error);
+    if (browser) await browser.close();
     const statusCode =
       error.message.includes("not found") ||
       error.message.includes("authorized") ||
       error.message.includes("Invalid") ||
-      error.message.includes("waitForTimeout")
+      error.message.includes("waitForTimeout") ||
+      error.message.includes("Navigation timeout") ||
+      error.message.includes("Could not find Chrome")
         ? 400
         : 500;
     res.status(statusCode).json({
@@ -439,7 +479,6 @@ billController.generateBill = async (req, res) => {
   }
 };
 
-// getMyBills (unchanged)
 billController.getMyBills = async (req, res) => {
   try {
     const userId = req.user?._id;
