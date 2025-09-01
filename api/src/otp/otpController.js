@@ -1,10 +1,18 @@
 const sendEmail = require("../utils/sendEmail");
+const axios = require("axios");
+const tough = require("tough-cookie");
+const { wrapper } = require("axios-cookiejar-support"); // ✅ Proper require
 
-const otpStore = {}; // Use DB or Redis in production
+// OTP storage (use DB or Redis in production)
+const otpStore = {};
 
+// Generate random 6-digit OTP
 const generateOtp = () =>
   Math.floor(100000 + Math.random() * 900000).toString();
 
+/**
+ * Send OTP via Email
+ */
 exports.sendOtp = async (req, res) => {
   const { email } = req.body;
   console.log("req.body ===>", req.body);
@@ -38,6 +46,9 @@ exports.sendOtp = async (req, res) => {
   }
 };
 
+/**
+ * Verify OTP via Email
+ */
 exports.verifyOtp = (req, res) => {
   const { email, otp } = req.body;
 
@@ -66,20 +77,17 @@ exports.verifyOtp = (req, res) => {
   });
 };
 
-// 🔥 Fix starts here
-const axios = require("axios");
-const tough = require("tough-cookie");
-const { wrapper } = require("axios-cookiejar-support"); // ✅ Correct require
-
+// 🔥 Setup axios client with cookie jar
 const client = wrapper(
   axios.create({
     jar: new tough.CookieJar(),
     withCredentials: true,
   })
 );
-// 🔥 Fix ends here
 
-// SEND OTP to phone number
+/**
+ * Send OTP via Phone
+ */
 exports.sendMobileOtp = async (req, res) => {
   const { phone_no } = req.body;
   console.log("Sending OTP request with:", { phone_no, phone_country: "+91" });
@@ -112,7 +120,9 @@ exports.sendMobileOtp = async (req, res) => {
   }
 };
 
-// VERIFY OTP
+/**
+ * Verify OTP via Phone
+ */
 exports.verifyMobileOtp = async (req, res) => {
   const { otp, fname, lname } = req.body;
 
