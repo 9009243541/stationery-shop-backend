@@ -1,7 +1,7 @@
 const sendEmail = require("../utils/sendEmail");
 const axios = require("axios");
 const tough = require("tough-cookie");
-const { wrapper } = require("axios-cookiejar-support"); // ✅ Proper require
+const { wrapper } = require("axios-cookiejar-support"); // ✅ Correct way
 
 // OTP storage (use DB or Redis in production)
 const otpStore = {};
@@ -77,7 +77,7 @@ exports.verifyOtp = (req, res) => {
   });
 };
 
-// 🔥 Setup axios client with cookie jar
+// 🔥 Setup axios client with cookie jar (must wrap after imports)
 const client = wrapper(
   axios.create({
     jar: new tough.CookieJar(),
