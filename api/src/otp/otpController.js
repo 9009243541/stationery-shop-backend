@@ -21,11 +21,11 @@ exports.sendOtp = async (req, res) => {
       to: email,
       subject: "A V Foundation - Your OTP Code",
       html: `
-    <p>Dear User,</p>
-    <p>Welcome to A V Foundation!</p>
-    <p>Your One-Time Password (OTP) is: <b>${otp}</b></p>
-    <p>This OTP will expire in 5 minutes.</p>
-  `,
+        <p>Dear User,</p>
+        <p>Welcome to A V Foundation!</p>
+        <p>Your One-Time Password (OTP) is: <b>${otp}</b></p>
+        <p>This OTP will expire in 5 minutes.</p>
+      `,
     });
 
     console.log(`OTP ${otp} sent to ${email}`);
@@ -66,13 +66,10 @@ exports.verifyOtp = (req, res) => {
   });
 };
 
+// 🔥 Fix starts here
 const axios = require("axios");
 const tough = require("tough-cookie");
-// const { wrapper } = require("axios-cookiejar-support");
-const { wrapper } = await import("axios-cookiejar-support");
-// const { wrapper } = require("axios-cookiejar-support");
-
-
+const { wrapper } = require("axios-cookiejar-support"); // ✅ Correct require
 
 const client = wrapper(
   axios.create({
@@ -80,13 +77,14 @@ const client = wrapper(
     withCredentials: true,
   })
 );
+// 🔥 Fix ends here
 
 // SEND OTP to phone number
 exports.sendMobileOtp = async (req, res) => {
   const { phone_no } = req.body;
   console.log("Sending OTP request with:", { phone_no, phone_country: "+91" });
 
-  if (!phone_no || phone.length !== 10) {
+  if (!phone_no || phone_no.length !== 10) {
     return res
       .status(400)
       .json({ success: false, message: "Invalid phone number" });
@@ -96,7 +94,7 @@ exports.sendMobileOtp = async (req, res) => {
     const response = await client.post(
       "https://auth.phone.email/submit-login",
       {
-        phone_no: phone,
+        phone_no,
         phone_country: "+91",
         client_id: process.env.PHONE_EMAIL_CLIENT_ID,
       }
