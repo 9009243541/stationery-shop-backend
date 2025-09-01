@@ -69,7 +69,9 @@ exports.verifyOtp = (req, res) => {
 const axios = require("axios");
 const tough = require("tough-cookie");
 // const { wrapper } = require("axios-cookiejar-support");
-const { wrapper } = await import("axios-cookiejar-support");
+// const { wrapper } = await import("axios-cookiejar-support");
+const { wrapper } = require("axios-cookiejar-support");
+
 
 
 const client = wrapper(
