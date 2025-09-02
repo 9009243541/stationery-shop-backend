@@ -203,6 +203,7 @@ const allowedOrigins = [
   "https://av-frontend.onrender.com",
   "https://stationery-shop-backend-y2lb.onrender.com",
   "https://av-foundation.vercel.app",
+  "http://3.109.63.115", 
 ];
 
 app.use(
