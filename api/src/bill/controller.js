@@ -1,8 +1,7 @@
-
 const billService = require("./service");
 const Order = require("../order/model");
 const UserModel = require("../users/model");
-const puppeteer = require("puppeteer");
+const chromium = require("chrome-aws-lambda"); // use chrome-aws-lambda
 const fs = require("fs").promises;
 const path = require("path");
 const sendEmail = require("../utils/sendEmail");
@@ -52,10 +51,10 @@ billController.generateBill = async (req, res) => {
     const order = await Order.findById(orderId)
       .populate({
         path: "products.productId",
-        select: "productName mrp discount",
-        options: { toJSON: { virtuals: true }, toObject: { virtuals: true } },
+        select: "productName mrp discount image",
       })
       .lean();
+
     if (!order) {
       return res.status(404).json({
         status: "ERROR",
@@ -69,83 +68,28 @@ billController.generateBill = async (req, res) => {
       throw new Error("Invoice number not generated");
     }
 
-    // Debug: Log data
-    console.log("Bill:", bill.toObject());
-    console.log("Order:", order);
-    console.log("User:", user);
-
     // Generate HTML
-    const htmlContent = await generateBillHtml({
-      bill: bill.toObject(),
-      order,
-      user,
+    const htmlContent = await generateBillHtml({ bill: bill.toObject(), order, user });
+
+    // Launch Puppeteer using chrome-aws-lambda
+    browser = await chromium.puppeteer.launch({
+      args: chromium.args,
+      defaultViewport: chromium.defaultViewport,
+      executablePath: await chromium.executablePath,
+      headless: chromium.headless,
+      ignoreHTTPSErrors: true,
     });
-    console.log("HTML Content Length:", htmlContent.length);
-
-    // Launch Puppeteer with explicit executable path for Render
-    console.log("Launching Puppeteer...");
-    // const puppeteerOptions = {
-    //   headless: "new",
-    //   args: [
-    //     "--no-sandbox",
-    //     "--disable-setuid-sandbox",
-    //     "--disable-dev-shm-usage",
-    //     "--font-render-hinting=none",
-    //     "--disable-gpu",
-    //     "--single-process", // Memory optimize for Render
-    //     "--no-zygote", // Memory optimize for Render
-    //   ],
-    //   executablePath:
-    //     process.env.PUPPETEER_EXECUTABLE_PATH ||
-    //     "C:/Users/HP/.cache/puppeteer/chrome/win64-139.0.7258.138/chrome-win64/chrome.exe",
-    // };
-
-     const puppeteerOptions = {
-  headless: "new",
-  args: [
-    "--no-sandbox",
-    "--disable-setuid-sandbox",
-    "--disable-dev-shm-usage",
-    "--font-render-hinting=none",
-    "--disable-gpu",
-  ],
-  executablePath: "C:/Program Files/Google/Chrome/Application/chrome.exe", // Use installed Chrome
-};
-
-browser = await puppeteer.launch(puppeteerOptions);
-console.log("Puppeteer launched successfully");
-
 
     const page = await browser.newPage();
 
-    // Debug Puppeteer logs
-    page.on("console", (msg) => console.log("PAGE LOG:", msg.text()));
-    page.on("error", (err) => console.log("PAGE ERROR:", err));
-    page.on("requestfailed", (request) =>
-      console.log("REQUEST FAILED:", request.url(), request.failure())
-    );
-
-    // Set content with relaxed waitUntil
     await page.setContent(htmlContent, {
-      waitUntil: "domcontentloaded", // Even more relaxed
-      timeout: 60000, // 60s
+      waitUntil: "domcontentloaded",
+      timeout: 60000,
       baseUrl: process.env.BASE_URL || "http://localhost:3300",
     });
 
     // Wait for rendering
-    await new Promise((resolve) => setTimeout(resolve, 5000));
-
-    // Debug: Save rendered HTML and screenshot
-    const renderedPath = path.join(__dirname, "../../../Uploads/rendered.html");
-    console.log("Rendered HTML Path:", renderedPath);
-    await fs.mkdir(path.join(__dirname, "../../../Uploads"), {
-      recursive: true,
-    });
-    await fs.writeFile(renderedPath, await page.content());
-    await page.screenshot({
-      path: path.join(__dirname, "../../../Uploads/debug_screenshot.png"),
-      fullPage: true,
-    });
+    await page.waitForTimeout(2000);
 
     // Generate PDF
     const pdfBuffer = await page.pdf({
@@ -155,11 +99,7 @@ console.log("Puppeteer launched successfully");
       preferCSSPageSize: true,
     });
 
-    // Debug: Save PDF
-    await fs.writeFile(
-      path.join(__dirname, "../../../Uploads/debug_pdf.pdf"),
-      pdfBuffer
-    );
+    await browser.close();
 
     // Send email with PDF attachment
     try {
@@ -194,10 +134,7 @@ console.log("Puppeteer launched successfully");
       const outputPath = path.join(outputDir, `bill_${bill.invoiceNo}.png`);
 
       await page.screenshot({ path: outputPath, fullPage: true });
-      const imageUrl = `${
-        process.env.BASE_URL || "http://localhost:3300"
-      }/uploads/bills/bill_${bill.invoiceNo}.png`;
-      await browser.close();
+      const imageUrl = `${process.env.BASE_URL || "http://localhost:3300"}/uploads/bills/bill_${bill.invoiceNo}.png`;
 
       return res.status(200).json({
         status: "OK",
@@ -206,9 +143,7 @@ console.log("Puppeteer launched successfully");
       });
     }
 
-    await browser.close();
-
-    // Return PDF blob if requested
+    // Return PDF inline if requested (for frontend new tab)
     if (returnBlob === "true") {
       res.set({
         "Content-Type": "application/pdf",
@@ -227,27 +162,14 @@ console.log("Puppeteer launched successfully");
       message: "Bill generated and sent successfully",
       data: {
         ...bill.toObject(),
-        createdAt: bill.createdAt.toLocaleString("en-IN", {
-          timeZone: "Asia/Kolkata",
-        }),
-        updatedAt: bill.updatedAt.toLocaleString("en-IN", {
-          timeZone: "Asia/Kolkata",
-        }),
+        createdAt: bill.createdAt.toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }),
+        updatedAt: bill.updatedAt.toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }),
       },
     });
   } catch (error) {
     console.error("❌ Error generating bill:", error);
     if (browser) await browser.close();
-    const statusCode =
-      error.message.includes("not found") ||
-      error.message.includes("authorized") ||
-      error.message.includes("Invalid") ||
-      error.message.includes("waitForTimeout") ||
-      error.message.includes("Navigation timeout") ||
-      error.message.includes("Could not find Chrome")
-        ? 400
-        : 500;
-    res.status(statusCode).json({
+    res.status(500).json({
       status: "ERROR",
       message: error.message || "Something went wrong while generating bill",
       data: null,
@@ -274,17 +196,13 @@ billController.getMyBills = async (req, res) => {
       message: "Bills fetched successfully",
       data: bills.map((bill) => ({
         ...bill.toObject(),
-        createdAt: bill.createdAt.toLocaleString("en-IN", {
-          timeZone: "Asia/Kolkata",
-        }),
-        updatedAt: bill.updatedAt.toLocaleString("en-IN", {
-          timeZone: "Asia/Kolkata",
-        }),
+        createdAt: bill.createdAt.toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }),
+        updatedAt: bill.updatedAt.toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }),
       })),
     });
   } catch (error) {
     console.error("❌ Error fetching bills:", error);
-    res.status(error.message.includes("not found") ? 404 : 500).json({
+    res.status(500).json({
       status: "ERROR",
       message: error.message || "Something went wrong while fetching bills",
       data: null,
