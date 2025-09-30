@@ -31,7 +31,7 @@
     "otp-generator": "^4.0.1",
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
-    "puppeteer": "^24.17.0",
+    "puppeteer": "^24.22.3",
     "tough-cookie": "^5.1.2",
     "twilio": "^5.7.3"
   }
