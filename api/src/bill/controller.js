@@ -1,213 +1,153 @@
-const billService = require("./service");
+const Bill = require("./model");
 const Order = require("../order/model");
-const UserModel = require("../users/model");
-const chromium = require("chrome-aws-lambda"); // use chrome-aws-lambda
-const fs = require("fs").promises;
-const path = require("path");
-const sendEmail = require("../utils/sendEmail");
-const generateOrderEmail = require("../utils/emailTemplates/orderConfirmation");
-const mongoose = require("mongoose");
-const generateBillHtml = require("../utils/pdfTemplates/generateBillHtml");
+const User = require("../users/model");
+const { generateBillPDF } = require("../utils/pdfGenerator");
+const { sendInvoiceEmail } = require("../utils/mailer");
+const fs = require("fs");
 
-const billController = {};
-
-billController.generateBill = async (req, res) => {
-  let browser = null;
+// =========================
+// Create a new bill
+// =========================
+exports.createBill = async (req, res) => {
   try {
-    const { orderId, paymentMode } = req.body;
-    const { returnBlob, returnImage } = req.query;
-    const userId = req.user?._id;
+    const { orderId, userId, totalAmount, paymentMode } = req.body;
 
-    if (!userId) {
-      return res.status(401).json({
-        status: "ERROR",
-        message: "Unauthorized: User ID not found in token",
-        data: null,
-      });
-    }
-
-    if (!mongoose.Types.ObjectId.isValid(orderId)) {
+    if (!orderId || !userId || !totalAmount || !paymentMode) {
       return res.status(400).json({
-        status: "ERROR",
-        message: "Invalid order ID",
-        data: null,
+        success: false,
+        message: "Missing required fields: orderId, userId, totalAmount, paymentMode",
       });
     }
 
-    const user = await UserModel.findById(userId)
-      .select("firstName lastName email")
-      .lean();
-    if (!user) {
-      return res.status(404).json({
-        status: "ERROR",
-        message: "User not found",
-        data: null,
-      });
-    }
-    const userName = `${user.firstName || "Valued"} ${
-      user.lastName || "Customer"
-    }`.trim();
-
-    const order = await Order.findById(orderId)
-      .populate({
-        path: "products.productId",
-        select: "productName mrp discount image",
-      })
-      .lean();
-
-    if (!order) {
-      return res.status(404).json({
-        status: "ERROR",
-        message: "Order not found",
-        data: null,
-      });
-    }
-
-    const bill = await billService.generateBill(userId, orderId, paymentMode);
-    if (!bill.invoiceNo) {
-      throw new Error("Invoice number not generated");
-    }
-
-    // Generate HTML
-    const htmlContent = await generateBillHtml({ bill: bill.toObject(), order, user });
-
-    // Launch Puppeteer using chrome-aws-lambda
-    browser = await chromium.puppeteer.launch({
-      args: chromium.args,
-      defaultViewport: chromium.defaultViewport,
-      executablePath: await chromium.executablePath,
-      headless: chromium.headless,
-      ignoreHTTPSErrors: true,
+    // Fetch order with products
+    const order = await Order.findById(orderId).populate({
+      path: "products.productId",
+      select: "productName mrp discount image",
     });
 
-    const page = await browser.newPage();
+    if (!order) return res.status(404).json({ success: false, message: "Order not found" });
 
-    await page.setContent(htmlContent, {
-      waitUntil: "domcontentloaded",
-      timeout: 60000,
-      baseUrl: process.env.BASE_URL || "http://localhost:3300",
-    });
-
-    // Wait for rendering
-    await page.waitForTimeout(2000);
-
-    // Generate PDF
-    const pdfBuffer = await page.pdf({
-      format: "A4",
-      printBackground: true,
-      margin: { top: "20px", right: "20px", bottom: "20px", left: "20px" },
-      preferCSSPageSize: true,
-    });
-
-    await browser.close();
-
-    // Send email with PDF attachment
-    try {
-      await sendEmail({
-        to: order.email || user.email,
-        subject: `Invoice ${bill.invoiceNo} for Order ${order._id}`,
-        html: generateOrderEmail({
-          userName,
-          order,
-          deliveryAddress: order.deliveryAddress,
-          paymentMode: bill.paymentMode,
-          total: bill.totalAmount,
-          isBill: true,
-        }),
-        attachments: [
-          {
-            filename: `Invoice_${bill.invoiceNo}.pdf`,
-            content: pdfBuffer,
-            contentType: "application/pdf",
-          },
-        ],
-      });
-      console.log("✅ Email sent successfully to", order.email || user.email);
-    } catch (emailError) {
-      console.error("✉️ Email sending failed:", emailError);
+    // Check if bill already exists
+    let bill = await Bill.findOne({ orderId });
+    if (!bill) {
+      bill = new Bill({ orderId, userId, totalAmount, paymentMode });
+      await bill.save();
     }
 
-    // Return image if requested
-    if (returnImage === "true") {
-      const outputDir = path.join(__dirname, "../../../Uploads/bills");
-      await fs.mkdir(outputDir, { recursive: true });
-      const outputPath = path.join(outputDir, `bill_${bill.invoiceNo}.png`);
-
-      await page.screenshot({ path: outputPath, fullPage: true });
-      const imageUrl = `${process.env.BASE_URL || "http://localhost:3300"}/uploads/bills/bill_${bill.invoiceNo}.png`;
-
-      return res.status(200).json({
-        status: "OK",
-        message: "Bill image generated successfully",
-        data: { imageUrl },
-      });
-    }
-
-    // Return PDF inline if requested (for frontend new tab)
-    if (returnBlob === "true") {
-      res.set({
-        "Content-Type": "application/pdf",
-        "Content-Disposition": `inline; filename=Invoice_${bill.invoiceNo}.pdf`,
-        "Content-Length": pdfBuffer.length,
-        "Cache-Control": "no-cache, no-store, must-revalidate",
-        Pragma: "no-cache",
-        Expires: "0",
-      });
-      return res.send(pdfBuffer);
-    }
-
-    // Default JSON response
-    res.status(201).json({
-      status: "OK",
-      message: "Bill generated and sent successfully",
-      data: {
-        ...bill.toObject(),
-        createdAt: bill.createdAt.toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }),
-        updatedAt: bill.updatedAt.toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }),
+    // Response with proper order & product info
+    const billResponse = {
+      ...bill.toObject(),
+      order: {
+        _id: order._id,
+        products: order.products.map((p) => ({
+          productId: p.productId._id,
+          name: p.productId.productName,
+          mrp: p.productId.mrp,
+          discount: p.productId.discount,
+          image: p.productId.image,
+          quantity: p.quantity,
+          price: p.price,
+          total: p.total,
+        })),
+        totalAmount: order.totalAmount,
+        status: order.status,
+        deliveryAddress: order.deliveryAddress,
       },
-    });
+      user: {
+        name: order.userId?.name || "Customer",
+        email: order.userId?.email || "unknown@example.com",
+      },
+    };
+
+    res.status(201).json({ success: true, bill: billResponse });
+  } catch (error) {
+    console.error("❌ Error creating bill:", error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// =========================
+// View bill in browser (PDF)
+// =========================
+exports.viewBill = async (req, res) => {
+  try {
+    const { orderId } = req.params;
+
+    // Find bill by orderId
+    const bill = await Bill.findOne({ orderId }).populate("orderId").populate("userId");
+    if (!bill) return res.status(404).send("Bill not found");
+
+    const order = bill.orderId;
+    const user = bill.userId;
+
+    const billData = {
+      ...bill.toObject(),
+      order: {
+        _id: order._id,
+        products: order.products.map((p) => ({
+          name: p.productId?.productName || p.name,
+          quantity: p.quantity,
+          price: p.price,
+          total: p.total,
+        })),
+        totalAmount: order.totalAmount,
+        deliveryAddress: order.deliveryAddress,
+      },
+      user: {
+        name: user?.name || "Customer",
+        email: user?.email || "unknown@example.com",
+      },
+    };
+
+    const pdfPath = await generateBillPDF(billData);
+    res.setHeader("Content-Type", "application/pdf");
+    fs.createReadStream(pdfPath).pipe(res);
   } catch (error) {
     console.error("❌ Error generating bill:", error);
-    if (browser) await browser.close();
-    res.status(500).json({
-      status: "ERROR",
-      message: error.message || "Something went wrong while generating bill",
-      data: null,
-    });
+    res.status(500).send("Error generating bill: " + error.message);
   }
 };
 
-billController.getMyBills = async (req, res) => {
+// =========================
+// Send bill via email
+// =========================
+exports.sendBillEmail = async (req, res) => {
   try {
-    const userId = req.user?._id;
+    const { orderId } = req.params;
 
-    if (!userId) {
-      return res.status(401).json({
-        status: "ERROR",
-        message: "Unauthorized: User ID not found in token",
-        data: null,
-      });
+    // Find bill by orderId
+    const bill = await Bill.findOne({ orderId }).populate("orderId").populate("userId");
+    if (!bill) return res.status(404).json({ success: false, message: "Bill not found" });
+
+    const user = bill.userId;
+    if (!user?.email) {
+      return res.status(400).json({ success: false, message: "User email not found" });
     }
 
-    const bills = await billService.getBillsByUserId(userId);
+    const pdfPath = await generateBillPDF({
+      ...bill.toObject(),
+      order: {
+        _id: bill.orderId._id,
+        products: bill.orderId.products.map((p) => ({
+          name: p.productId?.productName || p.name,
+          quantity: p.quantity,
+          price: p.price,
+          total: p.total,
+        })),
+        totalAmount: bill.orderId.totalAmount,
+        deliveryAddress: bill.orderId.deliveryAddress,
+      },
+      user: {
+        name: user.name,
+        email: user.email,
+      },
+    });
 
-    res.status(200).json({
-      status: "OK",
-      message: "Bills fetched successfully",
-      data: bills.map((bill) => ({
-        ...bill.toObject(),
-        createdAt: bill.createdAt.toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }),
-        updatedAt: bill.updatedAt.toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }),
-      })),
-    });
+    await sendInvoiceEmail(user.email, pdfPath, bill.invoiceNo);
+
+    res.json({ success: true, message: "Invoice sent to registered email" });
   } catch (error) {
-    console.error("❌ Error fetching bills:", error);
-    res.status(500).json({
-      status: "ERROR",
-      message: error.message || "Something went wrong while fetching bills",
-      data: null,
-    });
+    console.error("❌ Error sending bill email:", error);
+    res.status(500).json({ success: false, message: error.message });
   }
 };
-
-module.exports = billController;

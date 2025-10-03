@@ -1,36 +1,14 @@
 const express = require("express");
 const router = express.Router();
 const billController = require("./controller");
-const authenticate = require("../middleware/authToken");
-const validate = require("../middleware/validate");
-const Joi = require("joi");
 
-const billValidation = Joi.object({
-  orderId: Joi.string()
-    .regex(/^[0-9a-fA-F]{24}$/)
-    .required()
-    .messages({
-      "string.base": "Order ID must be a string",
-      "string.pattern.base": "Order ID must be a valid ObjectId",
-      "any.required": "Order ID is required",
-    }),
-  paymentMode: Joi.string()
-    .valid("cash", "upi", "card", "netbanking")
-    .required()
-    .messages({
-      "string.base": "Payment mode must be a string",
-      "any.only": "Payment mode must be cash, upi, card, or netbanking",
-      "any.required": "Payment mode is required",
-    }),
-});
+// Create a new bill (optional)
+router.post("/", billController.createBill);
 
-router.post(
-  "/generate",
-  authenticate(),
-  validate(billValidation),
-  billController.generateBill
-);
+// View bill by order ID
+router.get("/view-by-order/:orderId", billController.viewBill);
 
-router.get("/my-bills", authenticate(), billController.getMyBills);
+// Send bill by order ID via email
+router.post("/email-by-order/:orderId", billController.sendBillEmail);
 
 module.exports = router;
