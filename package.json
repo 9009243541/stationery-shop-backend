@@ -32,6 +32,7 @@
     "otp-generator": "^4.0.1",
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
+    "pdfkit": "^0.17.2",
     "puppeteer-core": "^10.4.0",
     "tough-cookie": "^5.1.2",
     "twilio": "^5.7.3"
